@@ -10,7 +10,8 @@
 
   var taskInput = document.getElementById('taskInput');
   var addTaskForm = document.getElementById('addTaskForm');
-  var taskList = document.getElementById('taskList');
+  var dueDateInput = document.getElementById('dueDateInput');
+  var taskList =document.getElementById('taskList');
   var taskCount = document.getElementById('taskCount');
   var taskFooter = document.getElementById('taskFooter');
   var clearCompletedBtn = document.getElementById('clearCompleted');
@@ -22,7 +23,8 @@
     taskList.innerHTML = '';
     visible.forEach(function (task) {
       var li = document.createElement('li');
-      li.className = 'task-item' + (task.completed ? ' completed' : '');
+      li.className = 'task-item' + (task.completed ? ' completed' : '') +
+        (TM.isOverdue(task) ? ' overdue' : '');
       li.dataset.id = task.id;
 
       var checkbox = document.createElement('input');
@@ -42,7 +44,16 @@
       priorityBadge.className = 'priority-badge priority-' + task.priority;
       priorityBadge.textContent = task.priority;
 
-      var deleteBtn = document.createElement('button');
+      var dueEl = null;
+      if (task.dueDate) {
+        var parts = task.dueDate.split('-');
+        var date = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        dueEl = document.createElement('span');
+        dueEl.className = 'due-date';
+        dueEl.textContent = 'Due: ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      var deleteBtn =document.createElement('button');
       deleteBtn.className = 'delete-btn';
       deleteBtn.textContent = '×';
       deleteBtn.setAttribute('aria-label', 'Delete task');
@@ -53,6 +64,7 @@
 
       li.appendChild(checkbox);
       li.appendChild(label);
+      if (dueEl) li.appendChild(dueEl);
       li.appendChild(priorityBadge);
       li.appendChild(deleteBtn);
       taskList.appendChild(li);
@@ -75,8 +87,9 @@
     var priority = prioritySelect ? prioritySelect.value : 'medium';
 
     try {
-      state.tasks = TM.addTask(state.tasks, text, priority);
+      state.tasks = TM.addTask(state.tasks, text, priority, dueDateInput.value || null);
       taskInput.value = '';
+      dueDateInput.value = '';
       taskInput.focus();
       render();
     } catch (e) {

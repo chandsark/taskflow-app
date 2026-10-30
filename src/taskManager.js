@@ -11,12 +11,13 @@
     return ++_idCounter;
   }
 
-  function createTask(text, priority) {
+  function createTask(text, priority, dueDate) {
     return {
       id: _nextId(),
       text: text,
       completed: false,
       priority: priority || 'medium',
+      dueDate: dueDate || null,
       createdAt: new Date().toISOString()
     };
   }
@@ -25,12 +26,12 @@
    * Returns a new array with the given task appended.
    * Throws if text is empty or whitespace-only.
    */
-  function addTask(tasks, text, priority) {
+  function addTask(tasks, text, priority, dueDate) {
     var trimmed = (text || '').trim();
     if (!trimmed) {
       throw new Error('Task text cannot be empty');
     }
-    return tasks.concat([createTask(trimmed, priority)]);
+    return tasks.concat([createTask(trimmed, priority, dueDate)]);
   }
 
   /**
@@ -86,7 +87,20 @@
     return tasks;
   }
 
+  /**
+   * Returns true if the task has a due date before today (local time)
+   * and is not completed. dueDate is an ISO date string (YYYY-MM-DD).
+   */
+  function isOverdue(task, now) {
+    if (!task.dueDate || task.completed) return false;
+    var d = now || new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    return task.dueDate < today;
+  }
+
   exports.createTask = createTask;
+  exports.isOverdue = isOverdue;
   exports.addTask = addTask;
   exports.toggleTask = toggleTask;
   exports.deleteTask = deleteTask;
