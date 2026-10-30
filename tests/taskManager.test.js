@@ -135,14 +135,22 @@ describe('getActiveCount', () => {
     expect(getActiveCount(tasks)).toBe(0);
   });
 
-  // This test catches the bug in getActiveCount.
-  // Expected: 2 (only the incomplete tasks), Actual (buggy): 3 (all tasks).
   test('returns only the count of incomplete tasks when some are completed', () => {
     let tasks = addTask([], 'Task 1');
     tasks = addTask(tasks, 'Task 2');
     tasks = addTask(tasks, 'Task 3');
     tasks = toggleTask(tasks, tasks[0].id); // complete Task 1
-    expect(getActiveCount(tasks)).toBe(2);  // FAILS with current bug
+    expect(getActiveCount(tasks)).toBe(2);
+  });
+
+  test('counts a task again after it is toggled back to incomplete', () => {
+    let tasks = addTask([], 'Task 1');
+    tasks = addTask(tasks, 'Task 2');
+    tasks = addTask(tasks, 'Task 3');
+    tasks = toggleTask(tasks, tasks[0].id);
+    expect(getActiveCount(tasks)).toBe(2);
+    tasks = toggleTask(tasks, tasks[0].id);
+    expect(getActiveCount(tasks)).toBe(3);
   });
 });
 
