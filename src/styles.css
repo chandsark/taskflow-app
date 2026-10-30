@@ -213,6 +213,33 @@ body {
   color: #16a34a;
 }
 
+/* ── Due date ── */
+.due-date-input {
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-card);
+  outline: none;
+}
+
+.due-date-input:focus {
+  border-color: var(--color-primary);
+}
+
+.due-date {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.task-item.overdue .due-date,
+.task-item.overdue .task-text {
+  color: var(--color-danger);
+}
+
 /* ── Delete button ── */
 .delete-btn {
   background: none;
@@ -306,6 +333,14 @@ body {
 @media (max-width: 480px) {
   .app-header h1 {
     font-size: 1.8rem;
+  }
+
+  .add-task-form {
+    flex-wrap: wrap;
+  }
+
+  .task-input {
+    flex-basis: 100%;
   }
 
   .task-footer {
